@@ -17,7 +17,7 @@ export const siteConfig: SiteConfig = {
 	},
 	banner: {
 		enable: false,
-		src: "assets/images/demo-banner.png", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
+		src: "/images/1.jpg", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
 		position: "center", // Equivalent to object-position, only supports 'top', 'center', 'bottom'. 'center' by default
 		credit: {
 			enable: false, // Display the credit text of the banner image
@@ -53,7 +53,7 @@ export const navBarConfig: NavBarConfig = {
 };
 
 export const profileConfig: ProfileConfig = {
-	avatar: "/images/avatar.jpg", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
+	avatar: "/images/ava.jpg", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
 	name: "Stari",
 	bio: "an ISE student at NJU",
 	links: [
@@ -68,9 +68,9 @@ export const profileConfig: ProfileConfig = {
 			url: "https://store.steampowered.com",
 		},
 		{
-			name: "GitHub",
-			icon: "fa6-brands:github",
-			url: "https://github.com/saicaca/fuwari",
+			name: "Email",
+			icon: "fa6-solid:envelope",
+			url: "mailto:3536614609@qq.com",
 		},
 	],
 };
