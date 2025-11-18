@@ -1,0 +1,111 @@
+---
+---
+<div id="card-poem_card-widget" class="poem-card">
+    <div id="poem_sentence" class="poem-sentence">正在加载诗词...</div>
+    <div class="poem-info">
+        <span id="poem_dynasty" class="poem-dynasty"></span>
+        <span id="poem_author" class="poem-author"></span>
+    </div>
+</div>
+
+<script is:inline>
+    // 使用 is:inline 避免 Astro 处理
+    (function() {
+        const script = document.createElement('script');
+        script.src = 'https://sdk.jinrishici.com/v2/browser/jinrishici.js';
+        script.onload = function() {
+            // 直接使用 window.jinrishici
+            window.jinrishici.load(function(result) {
+                const sentence = document.getElementById("poem_sentence");
+                const author = document.getElementById("poem_author");
+                const dynasty = document.getElementById("poem_dynasty");
+
+                if (sentence && result && result.data && result.data.content) {
+                    let sentenceText = result.data.content;
+                    sentenceText = sentenceText.substring(0, sentenceText.length - 1);
+                    sentence.textContent = sentenceText;
+                }
+
+                if (dynasty && result && result.data && result.data.origin && result.data.origin.dynasty) {
+                    dynasty.textContent = result.data.origin.dynasty;
+                }
+
+                if (author && result && result.data && result.data.origin && result.data.origin.author) {
+                    author.textContent = result.data.origin.author + '《' + result.data.origin.title + '》';
+                }
+            });
+        };
+
+        script.onerror = function() {
+            const sentence = document.getElementById("poem_sentence");
+            if (sentence) {
+                sentence.textContent = "诗词加载失败，请刷新页面";
+            }
+        };
+
+        document.head.appendChild(script);
+    })();
+</script>
+
+<style>
+    .poem-card {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        border: 1px solid #e1e5e9;
+    }
+
+    .poem-sentence {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        color: #2c3e50;
+        text-align: center;
+        margin-bottom: 1rem;
+        font-family: serif;
+        min-height: 1.6em;
+    }
+
+    .poem-info {
+        text-align: center;
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+
+    .poem-dynasty {
+        margin-right: 0.5rem;
+    }
+
+    .poem-author {
+        font-style: italic;
+    }
+
+    /* 深色模式支持 */
+    @media (prefers-color-scheme: dark) {
+        .poem-card {
+            background: #1a1a1a;
+            border-color: #333;
+        }
+
+        .poem-sentence {
+            color: #e0e0e0;
+        }
+
+        .poem-info {
+            color: #888;
+        }
+    }
+
+    /* 响应式设计 */
+    @media (max-width: 768px) {
+        .poem-card {
+            padding: 1rem;
+            margin: 0.5rem 0;
+        }
+
+        .poem-sentence {
+            font-size: 1rem;
+        }
+    }
+</style>
