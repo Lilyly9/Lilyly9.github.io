@@ -1,14 +1,14 @@
 ---
 import type { MarkdownHeading } from "astro";
+import PoemCard from "../PoemCard.astro";
+import QuoteCard from "../QuoteCard.astro"; // 添加这行导入
 import Categories from "./Categories.astro";
 import Profile from "./Profile.astro";
 import Tag from "./Tags.astro";
-import PoemCard from "../PoemCard.astro";
-import QuoteCard from "../QuoteCard.astro";  // 添加这行导入
 
 interface Props {
-    class?: string;
-    headings?: MarkdownHeading[];
+	class?: string;
+	headings?: MarkdownHeading[];
 }
 
 const className = Astro.props.class;
