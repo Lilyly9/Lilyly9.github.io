@@ -1,0 +1,137 @@
+---
+import WidgetLayout from "./widget/WidgetLayout.astro";
+---
+
+<WidgetLayout name="每日格言" id="quote-widget">
+    <div class="quote-content">
+        <div id="daily_quote" class="quote-text">正在加载格言...</div>
+        <div class="quote-info">
+            <span id="quote_author" class="quote-author"></span>
+            <span id="quote_source" class="quote-source"></span>
+        </div>
+    </div>
+</WidgetLayout>
+
+<script is:inline>
+    (function() {
+        // 使用名言API获取格言
+        function fetchQuote() {
+            fetch('https://api.btstu.cn/yan/api.php?charset=utf-8&encode=json')
+                .then(response => response.json())
+                .then(data => {
+                    const quoteElement = document.getElementById("daily_quote");
+                    const authorElement = document.getElementById("quote_author");
+                    const sourceElement = document.getElementById("quote_source");
+
+                    if (quoteElement && data.text) {
+                        quoteElement.textContent = `"${data.text}"`;
+                    }
+                    if (authorElement && data.from) {
+                        authorElement.textContent = data.from;
+                    }
+                    if (sourceElement) {
+                        sourceElement.textContent = data.source || '';
+                    }
+                })
+                .catch(error => {
+                    console.error('格言加载失败:', error);
+                    // 如果API失败，尝试备用API
+                    fetchBackupQuote();
+                });
+        }
+
+        // 备用API - 国际名言API
+        function fetchBackupQuote() {
+            // 翻译为中文的国际名言API
+            fetch('https://api.fghrsh.net/hitokoto/rand/?encode=jsc&charset=utf-8')
+                .then(response => response.json())
+                .then(data => {
+                    const quoteElement = document.getElementById("daily_quote");
+                    const authorElement = document.getElementById("quote_author");
+                    const sourceElement = document.getElementById("quote_source");
+
+                    if (quoteElement) {
+                        quoteElement.textContent = `"${data.hitokoto}"`;
+                    }
+                    if (authorElement) {
+                        authorElement.textContent = data.from || '未知';
+                    }
+                    if (sourceElement) {
+                        sourceElement.textContent = data.from_who || data.from || '';
+                    }
+                })
+                .catch(error => {
+                    console.error('备用格言API也失败了:', error);
+                    const quoteElement = document.getElementById("daily_quote");
+                    if (quoteElement) {
+                        quoteElement.textContent = "格言加载失败，请刷新页面";
+                    }
+                });
+        }
+
+        // 页面加载时获取格言
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchQuote();
+
+            // 每30分钟刷新一次格言
+            setInterval(fetchQuote, 30 * 60 * 1000);
+        });
+
+        // 如果用户点击格言区域，立即刷新
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('#quote-widget')) {
+                fetchQuote();
+            }
+        });
+    })();
+</script>
+
+<style>
+    .quote-content {
+        padding: 0.5rem 0;
+        cursor: pointer;
+        transition: opacity 0.3s ease;
+    }
+
+    .quote-content:hover {
+        opacity: 0.8;
+    }
+
+    .quote-text {
+        font-size: 1rem;
+        line-height: 1.6;
+        text-align: center;
+        margin-bottom: 0.5rem;
+        font-family: serif;
+        color: rgb(30 41 59); /* slate-800 */
+        font-style: italic;
+    }
+
+    .quote-info {
+        text-align: center;
+        font-size: 0.85rem;
+        color: rgb(71 85 105); /* slate-600 */
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    /* 深色模式 */
+    @media (prefers-color-scheme: dark) {
+        .quote-text {
+            color: rgb(226 232 240); /* slate-200 */
+        }
+
+        .quote-info {
+            color: rgb(148 163 184); /* slate-400 */
+        }
+    }
+
+    .quote-author {
+        font-weight: 500;
+    }
+
+    .quote-source {
+        font-style: italic;
+    }
+</style>
