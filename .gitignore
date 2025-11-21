@@ -1,4 +1,4 @@
-# build output
+﻿# build output
 dist/
 
 # generated types
@@ -22,9 +22,8 @@ pnpm-debug.log*
 
 .vercel
 
-package-lock.json
-bun.lockb
-yarn.lock
+# bun.lockb
+# yarn.lock
 
 # ide
 .idea
