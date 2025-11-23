@@ -3,135 +3,711 @@ import WidgetLayout from "./widget/WidgetLayout.astro";
 ---
 
 <WidgetLayout name="每日格言" id="quote-widget">
-    <div class="quote-content">
-        <div id="daily_quote" class="quote-text">正在加载格言...</div>
+    <div id="card-quote_card-widget" class="quote-content">
+        <div id="quote_text" class="quote-text clickable">正在加载格言...</div>
         <div class="quote-info">
-            <span id="quote_author" class="quote-author"></span>
-            <span id="quote_source" class="quote-source"></span>
+            <span id="quote_author" class="quote-author clickable"></span>
+            <span id="quote_source" class="quote-source clickable"></span>
         </div>
     </div>
 </WidgetLayout>
 
 <script is:inline>
     (function() {
-        // 使用名言API获取格言
-        function fetchQuote() {
-            fetch('https://api.btstu.cn/yan/api.php?charset=utf-8&encode=json')
-                .then(response => response.json())
-                .then(data => {
-                    const quoteElement = document.getElementById("daily_quote");
-                    const authorElement = document.getElementById("quote_author");
-                    const sourceElement = document.getElementById("quote_source");
-
-                    if (quoteElement && data.text) {
-                        quoteElement.textContent = `"${data.text}"`;
-                    }
-                    if (authorElement && data.from) {
-                        authorElement.textContent = data.from;
-                    }
-                    if (sourceElement) {
-                        sourceElement.textContent = data.source || '';
-                    }
+        // 精选的格言API列表 - 专注于高质量内容
+        const quoteAPIs = [
+            {
+                name: 'hitokoto',
+                url: 'https://v1.hitokoto.cn/',
+                parser: (data) => ({
+                    text: data.hitokoto,
+                    author: data.from_who || '未知',
+                    source: data.from || ''
                 })
-                .catch(error => {
-                    console.error('格言加载失败:', error);
-                    // 如果API失败，尝试备用API
-                    fetchBackupQuote();
-                });
-        }
-
-        // 备用API - 国际名言API
-        function fetchBackupQuote() {
-            // 翻译为中文的国际名言API
-            fetch('https://api.fghrsh.net/hitokoto/rand/?encode=jsc&charset=utf-8')
-                .then(response => response.json())
-                .then(data => {
-                    const quoteElement = document.getElementById("daily_quote");
-                    const authorElement = document.getElementById("quote_author");
-                    const sourceElement = document.getElementById("quote_source");
-
-                    if (quoteElement) {
-                        quoteElement.textContent = `"${data.hitokoto}"`;
-                    }
-                    if (authorElement) {
-                        authorElement.textContent = data.from || '未知';
-                    }
-                    if (sourceElement) {
-                        sourceElement.textContent = data.from_who || data.from || '';
-                    }
+            },
+            {
+                name: 'quotable',
+                url: 'https://api.quotable.io/random',
+                parser: (data) => ({
+                    text: data.content,
+                    author: data.author || '未知',
+                    source: data.tags ? `#${data.tags[0]}` : ''
                 })
-                .catch(error => {
-                    console.error('备用格言API也失败了:', error);
-                    const quoteElement = document.getElementById("daily_quote");
-                    if (quoteElement) {
-                        quoteElement.textContent = "格言加载失败，请刷新页面";
-                    }
-                });
-        }
-
-        // 页面加载时获取格言
-        document.addEventListener('DOMContentLoaded', function() {
-            fetchQuote();
-
-            // 每30分钟刷新一次格言
-            setInterval(fetchQuote, 30 * 60 * 1000);
-        });
-
-        // 如果用户点击格言区域，立即刷新
-        document.addEventListener('click', function(e) {
-            if (e.target.closest('#quote-widget')) {
-                fetchQuote();
+            },
+            {
+                name: 'literature-quotes',
+                url: 'https://api.quotable.io/random?tags=literature',
+                parser: (data) => ({
+                    text: data.content,
+                    author: data.author || '未知',
+                    source: '文学'
+                })
+            },
+            {
+                name: 'philosophy-quotes',
+                url: 'https://api.quotable.io/random?tags=philosophy',
+                parser: (data) => ({
+                    text: data.content,
+                    author: data.author || '未知',
+                    source: '哲学'
+                })
             }
-        });
+        ];
+
+        // 扩展的备用格言库（包含大量名人名言）
+        const fallbackQuotes = [
+            // 文学大师
+            {
+                text: "所有大人都曾经是小孩，虽然，只有少数的人记得。",
+                author: "安托万·德·圣-埃克苏佩里",
+                source: "《小王子》"
+            },
+            {
+                text: "为你，千千万万遍。",
+                author: "卡勒德·胡赛尼",
+                source: "《追风筝的人》"
+            },
+            {
+                text: "生存还是毁灭，这是一个值得考虑的问题。",
+                author: "莎士比亚",
+                source: "《哈姆雷特》"
+            },
+            {
+                text: "过去都是假的，回忆是一条没有归途的路。",
+                author: "加西亚·马尔克斯",
+                source: "《百年孤独》"
+            },
+            {
+                text: "满地都是六便士，他却抬头看见了月亮。",
+                author: "毛姆",
+                source: "《月亮与六便士》"
+            },
+            {
+                text: "幸福的家庭都是相似的，不幸的家庭各有各的不幸。",
+                author: "列夫·托尔斯泰",
+                source: "《安娜·卡列尼娜》"
+            },
+            {
+                text: "一个人可以被毁灭，但不能被打败。",
+                author: "海明威",
+                source: "《老人与海》"
+            },
+
+            // 中国古典文学
+            {
+                text: "满纸荒唐言，一把辛酸泪。都云作者痴，谁解其中味？",
+                author: "曹雪芹",
+                source: "《红楼梦》"
+            },
+            {
+                text: "学而时习之，不亦说乎？有朋自远方来，不亦乐乎？",
+                author: "孔子",
+                source: "《论语》"
+            },
+            {
+                text: "道可道，非常道；名可名，非常名。",
+                author: "老子",
+                source: "《道德经》"
+            },
+            {
+                text: "北冥有鱼，其名为鲲。鲲之大，不知其几千里也。",
+                author: "庄子",
+                source: "《逍遥游》"
+            },
+            {
+                text: "天将降大任于斯人也，必先苦其心志，劳其筋骨。",
+                author: "孟子",
+                source: "《孟子》"
+            },
+
+            // 哲学思想家
+            {
+                text: "我思故我在。",
+                author: "笛卡尔",
+                source: "《第一哲学沉思集》"
+            },
+            {
+                text: "存在先于本质。",
+                author: "让-保罗·萨特",
+                source: "存在主义"
+            },
+            {
+                text: "未经审视的人生不值得度过。",
+                author: "苏格拉底",
+                source: ""
+            },
+            {
+                text: "人生实如钟摆，在痛苦与倦怠之间摆动。",
+                author: "叔本华",
+                source: "《作为意志和表象的世界》"
+            },
+            {
+                text: "知识就是力量。",
+                author: "弗朗西斯·培根",
+                source: ""
+            },
+            {
+                text: "自由不是你想做什么就做什么，而是你不想做什么就可以不做什么。",
+                author: "康德",
+                source: ""
+            },
+
+            // 科学家与发明家
+            {
+                text: "想象力比知识更重要。",
+                author: "阿尔伯特·爱因斯坦",
+                source: ""
+            },
+            {
+                text: "如果我看得比别人更远，那是因为我站在巨人的肩膀上。",
+                author: "艾萨克·牛顿",
+                source: ""
+            },
+            {
+                text: "天才是1%的灵感加上99%的汗水。",
+                author: "托马斯·爱迪生",
+                source: ""
+            },
+            {
+                text: "简单是可靠的先决条件。",
+                author: "托尼·霍尔",
+                source: ""
+            },
+            {
+                text: "Stay hungry, stay foolish.",
+                author: "史蒂夫·乔布斯",
+                source: "斯坦福演讲"
+            },
+
+            // 政治家与领袖
+            {
+                text: "我有一个梦想。",
+                author: "马丁·路德·金",
+                source: ""
+            },
+            {
+                text: "不要问国家能为你做什么，要问你能为国家做什么。",
+                author: "约翰·肯尼迪",
+                source: ""
+            },
+            {
+                text: "为中华之崛起而读书。",
+                author: "周恩来",
+                source: ""
+            },
+            {
+                text: "天下兴亡，匹夫有责。",
+                author: "顾炎武",
+                source: ""
+            },
+
+            // 艺术家与音乐家
+            {
+                text: "艺术的目的不是再现可见，而是使不可见成为可见。",
+                author: "保罗·克利",
+                source: ""
+            },
+            {
+                text: "音乐是比一切智慧、一切哲学更高的启示。",
+                author: "贝多芬",
+                source: ""
+            },
+            {
+                text: "生活中不是缺少美，而是缺少发现美的眼睛。",
+                author: "罗丹",
+                source: ""
+            },
+
+            // 企业家与商业领袖
+            {
+                text: "预测未来的最好方式就是创造它。",
+                author: "彼得·德鲁克",
+                source: ""
+            },
+            {
+                text: "消费者并不知道自己需要什么，直到我们拿出自己的产品。",
+                author: "史蒂夫·乔布斯",
+                source: ""
+            },
+            {
+                text: "今天很残酷，明天更残酷，后天很美好，但绝大多数人死在明天晚上。",
+                author: "马云",
+                source: ""
+            },
+
+            // 诗人
+            {
+                text: "面朝大海，春暖花开。",
+                author: "海子",
+                source: "《面朝大海，春暖花开》"
+            },
+            {
+                text: "黑夜给了我黑色的眼睛，我却用它寻找光明。",
+                author: "顾城",
+                source: "《一代人》"
+            },
+            {
+                text: "为什么我的眼里常含泪水？因为我对这土地爱得深沉。",
+                author: "艾青",
+                source: "《我爱这土地》"
+            },
+            {
+                text: "轻轻的我走了，正如我轻轻的来。",
+                author: "徐志摩",
+                source: "《再别康桥》"
+            },
+
+            // 现代思想家
+            {
+                text: "世界上只有一种真正的英雄主义，那就是在认清生活真相之后依然热爱生活。",
+                author: "罗曼·罗兰",
+                source: "《米开朗基罗传》"
+            },
+            {
+                text: "生命的意义在于成为你自己。",
+                author: "尼采",
+                source: ""
+            },
+            {
+                text: "读书不是为了雄辩和驳斥，也不是为了轻信和盲从，而是为了思考和权衡。",
+                author: "弗朗西斯·培根",
+                source: "《论读书》"
+            },
+            {
+                text: "教育的目的应当是向人传送生命的气息。",
+                author: "泰戈尔",
+                source: ""
+            },
+
+            // 历史人物
+            {
+                text: "人生自古谁无死，留取丹心照汗青。",
+                author: "文天祥",
+                source: "《过零丁洋》"
+            },
+            {
+                text: "先天下之忧而忧，后天下之乐而乐。",
+                author: "范仲淹",
+                source: "《岳阳楼记》"
+            },
+            {
+                text: "鞠躬尽瘁，死而后已。",
+                author: "诸葛亮",
+                source: "《后出师表》"
+            },
+
+            // 女性领袖
+            {
+                text: "我们最大的恐惧不是能力不足，而是力量超乎想象。",
+                author: "玛丽安·威廉森",
+                source: ""
+            },
+            {
+                text: "教育一个男人，只是教育一个人；教育一个女人，就是教育一个家庭。",
+                author: "鲁迅",
+                source: ""
+            },
+            {
+                text: "我不求成功，只求尽力而为。",
+                author: "特蕾莎修女",
+                source: ""
+            },
+
+            // 电影与流行文化
+            {
+                text: "生活就像一盒巧克力，你永远不知道下一颗是什么味道。",
+                author: "阿甘正传",
+                source: ""
+            },
+            {
+                text: "能力越大，责任越大。",
+                author: "蜘蛛侠",
+                source: ""
+            },
+            {
+                text: "要么忙着活，要么忙着死。",
+                author: "肖申克的救赎",
+                source: ""
+            },
+
+            // 励志名言
+            {
+                text: "成功不是终点，失败也并非末日，最重要的是继续前进的勇气。",
+                author: "温斯顿·丘吉尔",
+                source: ""
+            },
+            {
+                text: "当你想要放弃的时候，想想是什么让你当初坚持走到了这里。",
+                author: "科比·布莱恩特",
+                source: ""
+            },
+            {
+                text: "最大的风险就是不冒任何风险。",
+                author: "马克·扎克伯格",
+                source: ""
+            }
+        ];
+
+        let currentAPIIndex = 0;
+        let isLoading = false;
+
+        function getDailyQuoteIndex() {
+            const today = new Date();
+            const dateStr = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+            let hash = 0;
+            for (let i = 0; i < dateStr.length; i++) {
+                hash = ((hash << 5) - hash) + dateStr.charCodeAt(i);
+                hash = hash & hash;
+            }
+            return Math.abs(hash) % fallbackQuotes.length;
+        }
+
+        function displayFallbackQuote() {
+            const index = getDailyQuoteIndex();
+            const quote = fallbackQuotes[index];
+            displayQuote(quote, true);
+        }
+
+        function displayQuote(quoteData, isFallback = false) {
+            const quoteElement = document.getElementById("quote_text");
+            const authorElement = document.getElementById("quote_author");
+            const sourceElement = document.getElementById("quote_source");
+
+            if (quoteElement) {
+                // 移除文本中的引号，使用CSS伪元素显示引号
+                const cleanText = quoteData.text.replace(/["“”'‘’]/g, '').trim();
+                quoteElement.textContent = cleanText;
+                quoteElement.classList.remove('loading');
+            }
+            if (authorElement) {
+                authorElement.textContent = quoteData.author;
+            }
+            if (sourceElement) {
+                sourceElement.textContent = quoteData.source ? ` - ${quoteData.source}` : '';
+            }
+
+            // 缓存格言
+            const quoteCache = {
+                text: quoteData.text,
+                author: quoteData.author,
+                source: quoteData.source,
+                timestamp: Date.now(),
+                isFallback: isFallback
+            };
+            try {
+                localStorage.setItem('dailyQuote', JSON.stringify(quoteCache));
+            } catch (e) {
+                console.warn('Failed to cache quote:', e);
+            }
+        }
+
+        function loadQuote() {
+            if (isLoading) return;
+
+            isLoading = true;
+            const api = quoteAPIs[currentAPIIndex];
+            const quoteElement = document.getElementById("quote_text");
+
+            if (!quoteElement) {
+                isLoading = false;
+                return;
+            }
+
+            // 显示加载状态
+            quoteElement.textContent = "加载中...";
+            quoteElement.classList.add('loading');
+
+            const authorElement = document.getElementById("quote_author");
+            const sourceElement = document.getElementById("quote_source");
+            if (authorElement) authorElement.textContent = "";
+            if (sourceElement) sourceElement.textContent = "";
+
+            // 设置超时时间
+            const timeoutPromise = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error('请求超时')), 5000)
+            );
+
+            const fetchPromise = fetch(api.url, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                },
+                mode: 'cors'
+            }).catch(error => {
+                throw new Error(`网络请求失败: ${error.message}`);
+            });
+
+            Promise.race([fetchPromise, timeoutPromise])
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP错误! 状态码: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('API响应:', data);
+                    const quoteData = api.parser(data);
+
+                    // 验证数据
+                    if (!quoteData.text || quoteData.text.trim() === '') {
+                        throw new Error('API返回空数据');
+                    }
+
+                    // 处理API返回的数据，移除引号
+                    quoteData.text = quoteData.text.replace(/["“”'‘’]/g, '').trim();
+
+                    displayQuote(quoteData, false);
+                    isLoading = false;
+                })
+                .catch(error => {
+                    console.error(`API ${api.name} 失败:`, error);
+
+                    // 尝试下一个API
+                    currentAPIIndex = (currentAPIIndex + 1) % quoteAPIs.length;
+                    if (currentAPIIndex === 0) {
+                        // 所有API都失败，使用备用格言
+                        console.log('所有API都失败，使用备用格言库');
+                        displayFallbackQuote();
+                        isLoading = false;
+                    } else {
+                        // 尝试下一个API
+                        console.log('尝试下一个API...');
+                        setTimeout(loadQuote, 1000);
+                    }
+                });
+        }
+
+        function getCachedQuote() {
+            try {
+                const cached = localStorage.getItem('dailyQuote');
+                if (!cached) return null;
+
+                const quoteCache = JSON.parse(cached);
+                const now = Date.now();
+                const oneDay = 24 * 60 * 60 * 1000;
+
+                // 检查缓存是否在24小时内
+                if (now - quoteCache.timestamp < oneDay) {
+                    return quoteCache;
+                }
+            } catch (error) {
+                console.error('读取缓存格言时出错:', error);
+            }
+            return null;
+        }
+
+        function displayCachedQuote(cachedQuote) {
+            const quoteElement = document.getElementById("quote_text");
+            const authorElement = document.getElementById("quote_author");
+            const sourceElement = document.getElementById("quote_source");
+
+            if (quoteElement) {
+                // 移除缓存文本中的引号
+                const cleanText = cachedQuote.text.replace(/["“”'‘’]/g, '').trim();
+                quoteElement.textContent = cleanText;
+                quoteElement.classList.remove('loading');
+            }
+            if (authorElement) authorElement.textContent = cachedQuote.author;
+            if (sourceElement) {
+                sourceElement.textContent = cachedQuote.source ? ` - ${cachedQuote.source}` : '';
+            }
+        }
+
+        function initializeQuote() {
+            console.log('初始化格言组件...');
+
+            // 首先检查是否有有效的缓存
+            const cachedQuote = getCachedQuote();
+            if (cachedQuote) {
+                console.log('使用缓存的格言');
+                displayCachedQuote(cachedQuote);
+                // 在后台尝试更新
+                setTimeout(loadQuote, 1000);
+            } else {
+                // 没有缓存，直接加载
+                console.log('无缓存，加载新格言');
+                loadQuote();
+            }
+        }
+
+        // 添加点击事件监听
+        function addClickListeners() {
+            const quoteElement = document.getElementById("quote_text");
+            const authorElement = document.getElementById("quote_author");
+            const sourceElement = document.getElementById("quote_source");
+
+            function handleClick() {
+                console.log('手动刷新格言');
+                loadQuote();
+            }
+
+            [quoteElement, authorElement, sourceElement].forEach(element => {
+                if (element) {
+                    element.addEventListener('click', handleClick);
+                }
+            });
+        }
+
+        // 改进的初始化函数
+        function init() {
+            console.log('开始初始化格言卡片...');
+            try {
+                initializeQuote();
+                setTimeout(addClickListeners, 100);
+
+                // 添加错误监听
+                window.addEventListener('error', (e) => {
+                    console.error('格言组件发生错误:', e.error);
+                });
+            } catch (error) {
+                console.error('初始化格言组件时出错:', error);
+                // 确保即使出错也显示备用格言
+                setTimeout(displayFallbackQuote, 500);
+            }
+        }
+
+        // 页面加载完成后初始化
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            // DOM已经加载完成
+            setTimeout(init, 100);
+        }
+
     })();
 </script>
 
 <style>
     .quote-content {
-        padding: 0.5rem 0;
-        cursor: pointer;
-        transition: opacity 0.3s ease;
-    }
-
-    .quote-content:hover {
-        opacity: 0.8;
+        padding: 1rem 0;
+        cursor: default;
+        min-height: 120px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
 
     .quote-text {
-        font-size: 1rem;
+        font-size: 1.1rem;
         line-height: 1.6;
         text-align: center;
-        margin-bottom: 0.5rem;
-        font-family: serif;
-        color: rgb(30 41 59); /* slate-800 */
+        margin-bottom: 0.75rem;
+        font-family: 'Georgia', 'Times New Roman', 'SimSun', serif;
+        color: rgb(30 41 59);
         font-style: italic;
+        transition: all 0.3s ease;
+        min-height: 3.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 1rem;
+        position: relative;
+    }
+
+    .quote-text::before {
+        content: "“";
+        font-size: 2rem;
+        color: rgba(100, 116, 139, 0.3);
+        position: absolute;
+        left: 0;
+        top: -0.5rem;
+    }
+
+    .quote-text::after {
+        content: "”";
+        font-size: 2rem;
+        color: rgba(100, 116, 139, 0.3);
+        position: absolute;
+        right: 0;
+        bottom: -0.5rem;
+    }
+
+    .quote-text.clickable:hover,
+    .quote-author.clickable:hover,
+    .quote-source.clickable:hover {
+        cursor: pointer;
+        opacity: 0.8;
+        transform: translateY(-1px);
+    }
+
+    .quote-text.loading {
+        opacity: 0.6;
+        cursor: wait;
+        color: rgb(100 116 139);
     }
 
     .quote-info {
         text-align: center;
-        font-size: 0.85rem;
-        color: rgb(71 85 105); /* slate-600 */
+        font-size: 0.9rem;
+        color: rgb(71 85 105);
         display: flex;
         justify-content: center;
+        align-items: center;
         gap: 0.5rem;
+        flex-wrap: wrap;
+        min-height: 1.5rem;
+        margin-top: 0.5rem;
+    }
+
+    .quote-author {
+        font-weight: 600;
+        transition: all 0.3s ease;
+        color: rgb(59 130 246);
+    }
+
+    .quote-source {
+        font-style: italic;
+        color: rgb(100 116 139);
+        transition: all 0.3s ease;
     }
 
     /* 深色模式 */
     @media (prefers-color-scheme: dark) {
         .quote-text {
-            color: rgb(226 232 240); /* slate-200 */
+            color: rgb(226 232 240);
         }
 
         .quote-info {
-            color: rgb(148 163 184); /* slate-400 */
+            color: rgb(148 163 184);
+        }
+
+        .quote-source {
+            color: rgb(148 163 184);
+        }
+
+        .quote-author {
+            color: rgb(96 165 250);
+        }
+
+        .quote-text.loading {
+            color: rgb(148 163 184);
         }
     }
 
-    .quote-author {
-        font-weight: 500;
+    /* 点击动画 */
+    .quote-text.clickable:active,
+    .quote-author.clickable:active,
+    .quote-source.clickable:active {
+        transform: translateY(0px);
+        transition: transform 0.1s ease;
     }
 
-    .quote-source {
-        font-style: italic;
+    /* 移动端适配 */
+    @media (max-width: 768px) {
+        .quote-text {
+            font-size: 1rem;
+            padding: 0 0.5rem;
+        }
+
+        .quote-info {
+            font-size: 0.85rem;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .quote-text::before,
+        .quote-text::after {
+            font-size: 1.5rem;
+        }
     }
 </style>
