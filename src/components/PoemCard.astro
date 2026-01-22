@@ -13,36 +13,51 @@ import WidgetLayout from "./widget/WidgetLayout.astro";
 </WidgetLayout>
 
 <script is:inline>
-    // 保持原有的诗词脚本不变
+    // 优化：增加错误边界和空值保护，避免数据异常导致脚本报错
     (function() {
+        // 先获取DOM元素，避免重复查询
+        const sentenceEl = document.getElementById("poem_sentence");
+        const dynastyEl = document.getElementById("poem_dynasty");
+        const authorEl = document.getElementById("poem_author");
+
+        // 加载今日诗词SDK
         const script = document.createElement('script');
         script.src = 'https://sdk.jinrishici.com/v2/browser/jinrishici.js';
+
         script.onload = function() {
-            window.jinrishici.load(function(result) {
-                const sentence = document.getElementById("poem_sentence");
-                const author = document.getElementById("poem_author");
-                const dynasty = document.getElementById("poem_dynasty");
-
-                if (sentence && result && result.data && result.data.content) {
-                    let sentenceText = result.data.content;
-                    sentenceText = sentenceText.substring(0, sentenceText.length - 1);
-                    sentence.textContent = sentenceText;
+            window.jinrishici?.load(function(result) {
+                // 空值保护：确保result和data存在
+                if (!result || !result.data) {
+                    sentenceEl.textContent = "暂无诗词推荐";
+                    return;
                 }
 
-                if (dynasty && result && result.data && result.data.origin && result.data.origin.dynasty) {
-                    dynasty.textContent = result.data.origin.dynasty;
+                // 渲染诗词内容
+                if (sentenceEl && result.data.content) {
+                    let sentenceText = result.data.content.trim();
+                    // 移除末尾多余标点（如句号），兼容不同返回格式
+                    if (sentenceText.endsWith('。')) {
+                        sentenceText = sentenceText.slice(0, -1);
+                    }
+                    sentenceEl.textContent = sentenceText;
                 }
 
-                if (author && result && result.data && result.data.origin && result.data.origin.author) {
-                    author.textContent = result.data.origin.author + '《' + result.data.origin.title + '》';
+                // 渲染朝代
+                if (dynastyEl && result.data.origin?.dynasty) {
+                    dynastyEl.textContent = result.data.origin.dynasty;
+                }
+
+                // 渲染作者和标题
+                if (authorEl && result.data.origin?.author && result.data.origin?.title) {
+                    authorEl.textContent = `${result.data.origin.author}《${result.data.origin.title}》`;
                 }
             });
         };
 
+        // 加载失败处理
         script.onerror = function() {
-            const sentence = document.getElementById("poem_sentence");
-            if (sentence) {
-                sentence.textContent = "诗词加载失败，请刷新页面";
+            if (sentenceEl) {
+                sentenceEl.textContent = "诗词加载失败，请刷新页面";
             }
         };
 
@@ -60,7 +75,7 @@ import WidgetLayout from "./widget/WidgetLayout.astro";
         line-height: 1.6;
         text-align: center;
         margin-bottom: 0.5rem;
-        font-family: serif;
+        font-family: "SimSun", "STSong", serif; /* 优化：指定中文字体，更适配诗词风格 */
         color: rgb(30 41 59); /* slate-800 */
     }
 
@@ -73,11 +88,11 @@ import WidgetLayout from "./widget/WidgetLayout.astro";
     /* 深色模式 */
     @media (prefers-color-scheme: dark) {
         .poem-sentence {
-            color: rgb(226 232 240); /* slate-200 */
+            color: lightgrey; /* 你修改后的浅色，替代原slate-200 */
         }
 
         .poem-info {
-            color: rgb(148 163 184); /* slate-400 */
+            color: lightgray; /* 注意：lightgray是正确写法，lightgrey是英式拼写，两者都兼容 */
         }
     }
 
