@@ -2,7 +2,8 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    # 同时监听 main 和 master 分支，解决你推 master 不触发的问题
+    branches: [main, master]
   workflow_dispatch:
 
 permissions:
@@ -21,6 +22,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          # 缓存 Node 依赖，加速后续部署
+          cache: 'pnpm'
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
@@ -49,4 +52,5 @@ jobs:
       id-token: write
     steps:
       - name: Deploy to GitHub Pages
+        id: deployment  # 补充 id，避免 url 变量找不到的问题
         uses: actions/deploy-pages@v4
