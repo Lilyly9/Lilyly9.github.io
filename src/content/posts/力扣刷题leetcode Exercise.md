@@ -1,12 +1,13 @@
 ---
 title: 力扣刷题Leetcode Exercise
 published: 2026-01-20
+description: 一轮leetcode刷题记录
 tags: [Learning]
 category: note
 draft: false
 ---
-## ***2026***
-### ***1.23***
+## 2026
+### 1.23
 
 - [x] 二分查找 704
 
