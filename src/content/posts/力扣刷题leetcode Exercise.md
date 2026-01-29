@@ -47,8 +47,8 @@ draft: false
         
         @media (prefers-color-scheme: dark) {
         mark {
-        background-color: #44403c;  
-        color: #f5f5f4;  
+        background-color: #fef3c7;  
+        color: #222211;  
         }
     }
 </style>
