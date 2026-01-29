@@ -1,6 +1,6 @@
 ---
 title: Java
-published: 2026-1-28
+published: 2026-01-28
 description: 'Java学习笔记'
 image: ''
 tags: [Java]
