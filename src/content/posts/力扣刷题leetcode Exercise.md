@@ -6,10 +6,17 @@ tags: [Learning]
 category: note
 draft: false
 ---
-## 2026
+
+- [数组](#数组)
+  - [滑动窗口](#滑动窗口)
+- 
+
+>## 2026
 ### 1.23
 
-- [x] ***二分查找 704***
+## 数组
+
+- [x] [***704. 二分查找***](https://leetcode.cn/problems/binary-search/)
 
   关于 <mark>**>=/medal±1**</mark> 的判断
 
@@ -17,7 +24,10 @@ draft: false
     - 若 [left,right]，则 right 初始化为len-1， `while(left<=right)`； media > target 时，right = media-1；media < target 时，left = media + 1
         - 若 [left,right)，则 right 初始化为 **len**，`while(left<right)`； media > target 时，right = <mark>__media__</mark>；media < target 时，left = media + 1
 ---
-  - [x] ***移除元素 27***
+> [!TIP] 
+> 快慢指针
+
+  - [x] [***27. 移除元素***](https://leetcode.cn/problems/remove-element/)
 
       1. <mark>**快慢指针**</mark>  O(n)
 
@@ -31,15 +41,33 @@ draft: false
          
          **在最开始和每一次覆盖之后**，把所有 nums[right] == val 的值排除掉
 
-- [x] ***删除有序数组中的重复项 26***
+*<u>while(**大循环**){ while(**小循环**)每次把特殊情况处理完 }</u>*
+
+- [x] [***26. 删除有序数组中的重复项***](https://leetcode.cn/problems/remove-duplicates-from-sorted-array/)
+- [x] [***844. 比较含退格的字符串***](https://leetcode.cn/problems/backspace-string-compare/solutions/683776/shuang-zhi-zhen-bi-jiao-han-tui-ge-de-zi-8fn8/)
+       
+   最后的比较需要优化 / stack方法
+
+- [x] [***283. 移动零***](https://leetcode.cn/problems/move-zeroes/)
+ 
+    只遍历一遍数组
+
+- [x] [***997.有序数组的平方***](https://leetcode.cn/problems/squares-of-a-sorted-array/)  此题争议较大（原数组上怎么实现）
 
 ---
-- [ ] 
+## 滑动窗口
+暴力解法会把数组嵌套遍历两遍，时间复杂度O(n^2);
+
+滑动窗口的思想是直接把数组遍历两遍，时间复杂度O(2n)
+
+- [ ] [***3. 无重复字符的最长子串***](https://leetcode.cn/problems/longest-substring-without-repeating-characters/description/)
+    
+- 
 
 
 <style>
     mark {
-        background-color: #fef3c7;  
+        background-color: #b5627d;  
         color: #2d3748;  
         padding: 0 2px; 
         border-radius: 2px;  
@@ -47,8 +75,8 @@ draft: false
         
         @media (prefers-color-scheme: dark) {
         mark {
-        background-color: #fef3c7;  
-        color: #222211;  
+        background-color: #BB8FCE;  
+        color: #333333;  
         }
     }
 </style>
