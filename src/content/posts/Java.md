@@ -15,6 +15,10 @@ lang: ''
 
 - [Java语言的特点](#java-language-features)
 - [数据类型](#数据类型)
+- [泛型](#MyGeneric)
+    - [泛型类](#class)
+    - [泛型接口](#interface)
+    - [泛型方法](#function)
 - 关键字
     - [static](#static)
     - [super](#super)
@@ -33,16 +37,22 @@ lang: ''
     - [StringBuilder]()
     - [BigDecimal类](#BigDecimal)
 - 集合结构体系
-  - [集合基础 ](#集合基础) 
-  - [Collection 接口](#Collection)    &emsp;[迭代器](#iterator)
-     - [List 子接口](#List)
-     - [Set 子接口](#Set)
-     - 
+    - [集合基础 ](#集合基础)
+    - [Collections 工具类](#cls)
+    - [Collection 接口](#Collection)    &emsp;[迭代器](#iterator)
+        - [List 子接口](#List)
+            - ArrayList
+            - Vector
+            - LinkList
+        - [Set 子接口](#Set)
+            - HashSet
+            - TreeSet &emsp;[Comparator接口](#Comparator)
+    - [Map集合](#Map)
+        - HashMap
 - 其他类
-  - [System类](#System)
-  - [Calendar](#Calendar)
-  - [SimpleDateFormat/DateTimeFormatter](#) 略
-  - 
+    - [System类](#System)
+    - [Calendar](#Calendar)
+    - [SimpleDateFormat/DateTimeFormatter](#) 略
 - [内部类](#内部类)
 
 []()
@@ -73,6 +83,107 @@ lang: ''
 
 ---
 
+## 泛型
+
+### 泛型类
+
+<span id="class"></span>
+
+```java
+public static class MyGeneric<T> {
+    T t;
+
+    public MyGeneric(T t) {
+        this.t = t;
+    }
+
+    public T getT() {
+        return t;
+    }
+
+    public void setT(T t) {
+        this.t = t;
+    }
+}
+
+public static void main(String[] args) {
+    // 使用String类型的泛型对象
+    MyGeneric<String> stringBox = new MyGeneric<>("Hello 泛型");
+    String str = stringBox.getT();
+    System.out.println(str); // 输出：Hello 泛型
+
+    // 使用Integer类型的泛型对象
+    MyGeneric<Integer> intBox = new MyGeneric<>(100);
+    Integer num = intBox.getT();
+    System.out.println(num); // 输出：100
+
+    // intBox.setT("错误类型"); // 编译失败：不兼容的类型
+}
+```
+
+### 泛型接口
+
+<span id="interface"></span>
+
+```java
+public class code1 {
+    public interface MyInterface<T> {
+        String name = "ZhangSan";
+
+        T server(T t); //自定义抽象方法
+    }
+
+    /* 创建类的时候直接确定类型T */
+    public static class MyInterfaceImpl1 implements MyInterface<String> {
+        @Override
+        public String server(String s) {
+            return s;
+        }
+    }
+
+    /* 之后确定 */
+    public static class MyInterfaceIml2<T> implements MyInterface<T> {
+
+        @Override
+        public T server(T t) {
+            return t;
+        }
+    }
+
+    public static void main(String[] args) {
+        MyInterfaceImpl1 impl = new MyInterfaceImpl1();
+        System.out.println(impl.server("Hello"));
+
+        MyInterfaceIml2<Integer> impl2 = new MyInterfaceIml2<>();
+        System.out.println(impl2.server(1000));
+    }
+}
+```
+
+### 泛型方法
+
+<span id="function "></span>
+
+```java
+public class MyGenericMethod {
+    public <T> T show(T t){
+        System.out.println(t);
+        return t;
+    }//整个方法中可以使用泛型T，作为返回值/参数类型
+
+    public static void main(String[] args) {
+        MyGenericMethod myGenericMethod = new MyGenericMethod();
+        myGenericMethod.show("String");
+        myGenericMethod.show(100);
+        //相当于自动重载方法
+    }
+}
+```
+
+---
+
+## 关键字
+
 ### static
 
 <span id="static"></span>
@@ -83,16 +194,12 @@ lang: ''
   访问类的非静态成员变量/非静态成员方法</u>(因为非静态成员方法变量都是必须依赖具体的对象才能够被调用)；只 **能** 调用<u>
   静态对象/静态方法</u>
 
----
-
 ### super
 
 <span id="super"></span>
 super 代表的是 **父类对象**。<br>
 每一个子类的构造方法在没有显示调用 super() <u>系统</u> 都会 <u>提供默认的 super()</u>，super() 必须是构造器的 <u>
 第一条语句</u>
-
----
 
 ### final
 
@@ -414,17 +521,18 @@ double d1 = 1.0;
 ```
 
 ---
+
 ## 集合
+
 ### 集合基础
+
 <span id="集合基础"></span>
+
 1. 集合与数组的区别
-    数组的容量固定，集合容量可变。
-    数组可以存储基本类型和引用类型，集合只能引用类型
+   数组的容量固定，集合容量可变。
+   数组可以存储基本类型和引用类型，集合只能引用类型
 2. 关系
-![img_1.png](img_1.png)
-
-
-
+   ![img_1.png](img_1.png)
 
 
 6. **ArrayList** 的常用方法
@@ -445,10 +553,60 @@ double d1 = 1.0;
    // size 返回元素个数
       array.size();// 3
    ```
+
 ---
+
+### Collections 方法类
+
+<span id="cls"></span>
+集合工具类，定义了除了存取以外的集合常用方法。
+
+```java
+List<Integer> list = new ArrayList<>();
+    list.add(10);
+    list.add(20);
+    list.add(17);
+    list.add(19);
+/* sort排序 */
+    Collections.sort(list);
+    System.out.println(list.toString());
+/* binarySearch */
+    int idx = Collections.binarySearch(list, 17);
+    System.out.println(idx);
+/* copy */
+    List<Integer> dest = new ArrayList<>();
+    for (int i = 0; i < list.size(); i++) {
+        dest.add(null); // 填充null作为占位符
+    }//copy方法的不足：要求占位元素和复制元素个数相同
+    Collections.copy(dest, list);
+
+    /* 一般用Arrays.addAll(list) */
+    List<Integer> dest2 = new ArrayList<>(list.size()); // 指定初始容量优化性能
+    dest2.addAll(list);
+
+/* reverse反转 */
+    Collections.reverse(list);
+
+/* shuffle打乱 */
+    Collections.shuffle(list);
+
+/* list → 数组 */
+    Integer[] arr = list.toArray(new Integer[0]);
+    System.out.println(Arrays.toString(arr));
+
+/* 数组 → list */
+    String[] names ={"Lily","Molly","June"};
+    List<String> list2 = Arrays.asList(names);
+//list2.add("hi");现在集合是一个受限集合，不能增删元素
+```
+
+---
+
 ### Collection 集合
+
 <span id="Collection"></span>
 无序、无下标、不能重复
+
 ```java
     Collection c = new ArrayList<>();
 /* 添加元素 */
@@ -471,10 +629,13 @@ double d1 = 1.0;
 //迭代器迭代过程中不能使用collection的方法
        it.remove();//✔
 ```
+
 <span id="iterator"></span>
- 
+
 ---
-### List子接口
+
+### List 子接口
+
 有序、有下标、元素可以重复
 
 1. 常用方法
@@ -506,9 +667,9 @@ double d1 = 1.0;
         }//从后往前
     ```
 2. List的实现类
-   1. ArrayList(效率高，线程不安全)
-      (源码分析)[https://www.bilibili.com/video/BV1zD4y1Q7Fw?t=340.1&p=12]
-   2. Vector(线程安全，效率低)
+    1. ArrayList(效率高，线程不安全)
+       (源码分析)[https://www.bilibili.com/video/BV1zD4y1Q7Fw?t=340.1&p=12]
+    2. Vector(线程安全，效率低)
      ```java
         Vector vector = new Vector<>();
         vector.add("b");
@@ -523,7 +684,7 @@ double d1 = 1.0;
         }
      ···略
      ```
-   3. LinkList（链表集合，增删快/改查慢）
+    3. LinkList（链表集合，增删快/改查慢）
      ```java
    LinkedList ll = new LinkedList<>();
     ll.add("apple");
@@ -533,6 +694,105 @@ double d1 = 1.0;
     Iterator it = ll.iterator();
    ```
 
+---
+
+### Set 子接口
+
+<span id="Set"></span>
+无序、无下标、不能重复
+
+1. HashSet
+    ```java
+    HashSet hs = new HashSet<String>();
+    hs.add("a");
+    hs.add("b");
+    hs.remove("b");
+    hs.contains("a");
+    hs.isEmpty();
+    ```
+2. TreeSet
+   基于红黑树的集合<br>
+   Comparator接口：自定义比较规则
+   <span id="Comparator"></span>
+    ```java
+    import java.util.*;
+    
+    public class code2 {
+        static class Person {
+            int age;
+    
+            Person(int age) {
+                this.age = age;
+            }
+    
+            @Override
+            public String toString() {
+                return "Person{age=" + age + "}";
+            }
+        }
+    
+        public static void main(String[] args) {
+            // 创建TreeSet，传入Comparator自定义比较规则（按age升序）
+            TreeSet<Person> persons = new TreeSet<>(new Comparator<Person>() {
+                @Override // 重写compare方法
+                public int compare(Person p1, Person p2) {
+                    return p1.age - p2.age; // 按age升序排列
+                }
+            });
+            /* Lambda 表达式 */
+            /* TreeSet<Person> persons = new TreeSet<>((p1, p2) -> p1.age - p2.age); */
+    
+            persons.add(new Person(25));
+            persons.add(new Person(18));
+            persons.add(new Person(30));
+            persons.add(new Person(18)); // age相同，TreeSet会去重，不会添加
+    
+            System.out.println("按age升序排列的Person集合：");
+            for (Person p : persons) {
+                System.out.println(p);
+            }
+        }
+    } 
+    ```
+
+---
+
+### Map集合
+
+<span id="Map"></span>
+
+1. Map(interface)
+    - 实现类
+        - HashMap 运行效率高，线程不安全
+        - Hashtable 运行效率低，线程安全。已被 ConcurrentHashMap 替代
+            - Properties (Hashtable的子类，要求key和value都是String)，是开发中配置读写的标准工具。
+    - SortedMap(interface)
+        - TreeMap(class) 红黑树存储
+2. 常用方法
+    ```java
+    Map<Integer,String> map = new HashMap<>();
+    //添加(key,value)
+        map.put(2,"Molly");
+        map.put(1,"Lily");
+        map.put(3,"Star");
+        map.put(7,"emm");
+    //删除key
+        map.remove(7);
+   //个数
+        map.size();//3
+    //keySet
+        for(Integer key : map.keySet()){
+            System.out.println(key);
+        }
+    //entrySet 映射对
+        Set<Map.Entry<Integer,String>> entries = map.entrySet();
+        for (Map.Entry<Integer,String> entry: entries){
+            System.out.println(entry);
+        }
+    //判断是否包含
+        System.out.println(map.containsKey(3));
+        System.out.println(map.containsValue("Star"));
+    ```
 
 ---
 
