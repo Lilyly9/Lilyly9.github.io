@@ -28,8 +28,9 @@ draft: false
           __</mark>；media < target 时，left = media + 1
 - [x] [59. 螺旋矩阵II](https://leetcode.cn/problems/spiral-matrix-ii/description/)
     <br>关于边界条件、循环不变式的确定。
-  - [] [54，螺旋矩阵](https://leetcode.cn/problems/spiral-matrix/description/)
-
+  - [x] [54，螺旋矩阵](https://leetcode.cn/problems/spiral-matrix/description/)
+    1. 避免单行/列重复遍历
+    2. 按层遍历，收缩边界
 ---
 > [!TIP]
 > 快慢指针
