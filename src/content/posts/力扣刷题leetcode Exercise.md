@@ -26,8 +26,7 @@ draft: false
   关于能取到的范围, target 所在范围：
     - 若 [left,right]，则 right 初始化为len-1， `while(left<=right)`； media > target 时，right = media-1；media < target
       时，left = media + 1
-        - 若 [left,right)，则 right 初始化为 **len**，`while(left<right)`； media > target 时，right = <mark>__media
-          __</mark>；media < target 时，left = media + 1
+        - 若 [left,right)，则 right 初始化为 **len**，`while(left<right)`； media > target 时，right = <mark>media</mark>；media < target 时，left = media + 1
 - [x] [59. 螺旋矩阵II](https://leetcode.cn/problems/spiral-matrix-ii/description/)
     <br>关于边界条件、循环不变式的确定。
   - [x] [54. 螺旋矩阵](https://leetcode.cn/problems/spiral-matrix/description/)
