@@ -1,5 +1,5 @@
 ---
-title: 力扣刷题Leetcode Exercise
+title: 力扣Leetcode Exercise
 published: 2026-01-20
 description: 一轮leetcode刷题记录
 tags: [ Learning ]
@@ -8,7 +8,8 @@ draft: false
 ---
 
 - [数组](#数组)
-    - [滑动窗口](#滑动窗口)
+  - [快慢指针](#slowfast) 
+  - [滑动窗口](#滑动窗口)
 -
 
 > ## 2026
@@ -16,6 +17,7 @@ draft: false
 ### 1.23
 
 ## 数组
+<span id="数组"></span>
 
 - [x] [***704. 二分查找***](https://leetcode.cn/problems/binary-search/)
 
@@ -28,12 +30,12 @@ draft: false
           __</mark>；media < target 时，left = media + 1
 - [x] [59. 螺旋矩阵II](https://leetcode.cn/problems/spiral-matrix-ii/description/)
     <br>关于边界条件、循环不变式的确定。
-  - [x] [54，螺旋矩阵](https://leetcode.cn/problems/spiral-matrix/description/)
-    1. 避免单行/列重复遍历
+  - [x] [54. 螺旋矩阵](https://leetcode.cn/problems/spiral-matrix/description/)
+    1. _**避免单行/列重复遍历**_
     2. 按层遍历，收缩边界
 ---
-> [!TIP]
-> 快慢指针
+### 快慢指针
+<span id="slowfast"></span>
 
 - [x] [***27. 移除元素***](https://leetcode.cn/problems/remove-element/)
 
@@ -62,7 +64,8 @@ draft: false
 
 ---
 
-## 滑动窗口
+### 滑动窗口
+<span id="滑动窗口"></span>
 找**连续**字串、数组的最小/最好字串、子数组
 
 暴力解法会把数组嵌套遍历两遍，时间复杂度O(n^2);<br>
