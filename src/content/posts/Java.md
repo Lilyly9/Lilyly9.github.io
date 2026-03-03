@@ -34,7 +34,7 @@ lang: ''
     - [Arrays类](#Arrays)
     - [String类](#String类)
     - [StringBuffer](#stringbuffer)
-    - [StringBuilder]()
+    - [StringBuilder](#stringbuffer)
     - [BigDecimal类](#BigDecimal)
 - 集合结构体系
     - [集合基础 ](#集合基础)
@@ -55,7 +55,7 @@ lang: ''
     - [SimpleDateFormat/DateTimeFormatter](#) 略
 - [内部类](#内部类)
 - [JVM](#jvm)
-
+---
 ### Java语言的特点
 
 <span id="java-language-features"></span>
@@ -773,6 +773,8 @@ List<Integer> list = new ArrayList<>();
         map.put(1,"Lily");
         map.put(3,"Star");
         map.put(7,"emm");
+   // 获取key所对应的值
+        System.out.println(map.get(2));//Molly
     //删除key
         map.remove(7);
    //个数

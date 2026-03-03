@@ -2,15 +2,22 @@
 title: 力扣Leetcode Exercise
 published: 2026-01-20
 description: 一轮leetcode刷题记录
-tags: [ Learning ]
+tags: [ Leetcode ]
 category: note
 draft: false
 ---
+链表：7. 链表相交(面试02.07)  &emsp; 8. 环形链表II(142)
+<br>哈希表：6. 四数相加II(454) &emsp; 8.三数之和(15) &emsp; 9. 四数之和(18)
+<br>字符串
+<br>双指针法
 
 - [数组](#数组)
   - [快慢指针](#slowfast) 
   - [滑动窗口](#滑动窗口)
--
+- [链表](#linklist)
+- [哈希表](#哈希表)
+- [字符串](#字符串)
+- [二叉树](#二叉树)
 
 > ## 2026
 
@@ -60,7 +67,11 @@ draft: false
   只遍历一遍数组
 
 - [x] [***997.有序数组的平方***](https://leetcode.cn/problems/squares-of-a-sorted-array/)  此题争议较大（原数组上怎么实现）
-
+- [x] [***19. 删除链表的倒数第 N 个结点***](https://leetcode.cn/problems/remove-nth-node-from-end-of-list/)
+    ① 一次遍历法(最优解)：<u>快指针先走 N 步，快慢指针再一起走，直到快指针到达null</u><br>
+    ② 两次遍历法：第一遍确定总个数 len，再 len-n 求出需要进行操作的节点序号(删除的前一个节点)。要添加 dummy 虚拟头节点。
+- [x] [160. 相交链表](https://leetcode.cn/problems/intersection-of-two-linked-lists/description/)
+    计算两链表长度的差值，
 ---
 
 ### 滑动窗口
@@ -80,6 +91,87 @@ draft: false
 - [x] [209. 长度最小的子数组](https://leetcode.cn/problems/minimum-size-subarray-sum/)
   每一轮迭代，将 nums[r] 加到sum，如果 sum ≥ target，则更新 l，更新子数组的最小长度，l不断右移到 sum<target
 
+### 链表
+<span id="linklist"></span>
+-[x] [203. 移除链表元素](https://leetcode.cn/problems/remove-linked-list-elements/description/)<br>
+    ①移除头节点 head 和移除其他节点有区别，②Solution：添加虚拟头节点<br>
+    ① 头节点<br>
+    ```java
+    while(head!=null && head.val==val) {
+        head = head.next;
+    }
+    ```
+    其他节点，_**连续target值的处理**_
+    ```java
+  ListNode cur = head;
+    while(cur!=null && cur.next !=null) {
+        if(cur.next.val == val){
+            cur.next = cur.next.next; //处理连续target值
+        } else {
+            cur = cur.next;
+        }
+    }
+  ```
+  ② <mark>**_虚拟头节点（哨兵）_**</mark>
+    ```java
+    ListNode dumpy = new ListNode();
+        dumpy.next = head;
+  ```
+  
+-[x] [反转链表](https://leetcode.cn/problems/reverse-linked-list/)  易
+- [x] [两两交换链表中的节点](https://leetcode.cn/problems/swap-nodes-in-pairs/)
+    <br>_**添加虚拟头节点**_ :操作当前节点，至少要指向当前的前一个节点 
+    <br>① 做的复杂化了，是递归假象的 while 循环，优化：一次循环只交换一对
+    <br>② 递归&emsp;很巧妙（跪）
+
+**_快慢指针_**
+- [x] [19. 删除链表的倒数第 N 个结点](https://leetcode.cn/problems/remove-nth-node-from-end-of-list/)
+- [x] [160. 相交链表](https://leetcode.cn/problems/intersection-of-two-linked-lists/description/)
+
+
+---
+### 哈希表/散列表
+<span id="哈希表"></span>
+- [x] [242. 有效的字母异位词](https://leetcode.cn/problems/valid-anagram/submissions/699923689/)
+    桶计数法。
+- [x] [349. 两个数组的交集](https://leetcode.cn/problems/intersection-of-two-arrays/description/)
+    数据类型的转换，Set<Integer> → int[]<br>
+    包装类型流 转化为 基本数据类型数组：包装类型流 → 基本类型流 → 基本类型数组
+    ```java
+       res.stream().mapToInt(Integer::intValue).toArray();
+     ```
+- [x] [202. 快乐数](https://leetcode.cn/problems/happy-number/)
+    hash 空间复杂度是 O(n);改用快慢指针，空间复杂度O(1).
+- [x] [1. 两数之和](https://leetcode.cn/problems/two-sum/description/)
+
+
+
+
+
+
+---
+### 字符串
+<span id="字符串"></span>
+- [x] [344. 反转字符串](https://leetcode.cn/problems/reverse-string/description/)
+- [x] [541. 反转字符串II](https://leetcode.cn/problems/reverse-string-ii/submissions/701699936/)
+      <br>两道很简单的模拟题
+- [x] [替换数字](https://kamacoder.com/problempage.php?pid=1064)
+- [x] [151. 反转字符串中的单词](https://leetcode.cn/problems/reverse-words-in-a-string/)
+    Java中的 **_split_** 两个string之间的空格＞1，会多增加一个空单词（""）
+    删除尾部空格 s.**strim();**
+
+
+
+---
+### 二叉树
+<span id="二叉树"></span>
+- [x] [1022. 从根到叶的二进制数之和](https://leetcode.cn/problems/sum-of-root-to-leaf-binary-numbers/description/?envType=daily-question&envId=2026-02-24)
+    <br>dfs + 递归
+- [] []()
+
+
+  
+  
 <style>
     mark {
         background-color: #b5627d;  
