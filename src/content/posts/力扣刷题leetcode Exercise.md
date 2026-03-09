@@ -17,6 +17,7 @@ draft: false
 - [链表](#linklist)
 - [哈希表](#哈希表)
 - [字符串](#字符串)
+  - [KMP算法](#KMP1) 
 - [二叉树](#二叉树)
 
 > ## 2026
@@ -91,9 +92,9 @@ draft: false
 - [x] [209. 长度最小的子数组](https://leetcode.cn/problems/minimum-size-subarray-sum/)
   每一轮迭代，将 nums[r] 加到sum，如果 sum ≥ target，则更新 l，更新子数组的最小长度，l不断右移到 sum<target
 
-### 链表
+## 链表
 <span id="linklist"></span>
--[x] [203. 移除链表元素](https://leetcode.cn/problems/remove-linked-list-elements/description/)<br>
+- [x] [203. 移除链表元素](https://leetcode.cn/problems/remove-linked-list-elements/description/)<br>
     ①移除头节点 head 和移除其他节点有区别，②Solution：添加虚拟头节点<br>
     ① 头节点<br>
     ```java
@@ -118,7 +119,7 @@ draft: false
         dumpy.next = head;
   ```
   
--[x] [反转链表](https://leetcode.cn/problems/reverse-linked-list/)  易
+- [x] [反转链表](https://leetcode.cn/problems/reverse-linked-list/)  易
 - [x] [两两交换链表中的节点](https://leetcode.cn/problems/swap-nodes-in-pairs/)
     <br>_**添加虚拟头节点**_ :操作当前节点，至少要指向当前的前一个节点 
     <br>① 做的复杂化了，是递归假象的 while 循环，优化：一次循环只交换一对
@@ -130,7 +131,7 @@ draft: false
 
 
 ---
-### 哈希表/散列表
+## 哈希表/散列表
 <span id="哈希表"></span>
 - [x] [242. 有效的字母异位词](https://leetcode.cn/problems/valid-anagram/submissions/699923689/)
     桶计数法。
@@ -150,20 +151,107 @@ draft: false
 
 
 ---
-### 字符串
+## 字符串
 <span id="字符串"></span>
 - [x] [344. 反转字符串](https://leetcode.cn/problems/reverse-string/description/)
 - [x] [541. 反转字符串II](https://leetcode.cn/problems/reverse-string-ii/submissions/701699936/)
-      <br>两道很简单的模拟题
+- [x] [28. 找出字符串中第一个匹配项的下标 strStr()](https://leetcode.cn/problems/find-the-index-of-the-first-occurrence-in-a-string/description/)
+      <br>👆很简单的模拟题，但T28值得一提的 [<u>**_KMP算法_**</u>](#KMP2)
+<span id="KMP1"></span>
 - [x] [替换数字](https://kamacoder.com/problempage.php?pid=1064)
 - [x] [151. 反转字符串中的单词](https://leetcode.cn/problems/reverse-words-in-a-string/)
     Java中的 **_split_** 两个string之间的空格＞1，会多增加一个空单词（""）
     删除尾部空格 s.**strim();**
+- 
 
+### KMP
+<span id="KMP2"></span>
+1. 当匹配不上时，在已匹配的字符串中检查是否有相同的前缀:
+    1. 存在，将 匹配串 的指针移至 <u>前缀</u> 的下一个位置继续匹配
+   2. 不存在，回到 匹配串 的 <u>起始位置</u> 重新开始
+    <div style="display: flex; width: 100%; gap: 10px;">
+      <div style="flex: 1; text-align: center;">
+        <img src="img_18.png" alt="KMP匹配示意图1" style="width: 100%;">
+      </div>
+      <div style="flex: 1; text-align: center;">
+        <img src="img_19.png" alt="KMP匹配示意图2" style="width: 100%;">
+      </div>
+    </div>
+2. 分析到这里，就结束了吗？要开始动手实现上述匹配过程了吗？
 
+   我们可以先分析一下复杂度。最坏情况下我们需要扫描整个串，复杂度为 $O(n)$。同时在每一次匹配失败时，去检查已匹配部分的相同「前缀」和「后缀」，跳转到相应的位置，如果不匹配则再检查前面部分是否有相同「前缀」和「后缀」，再跳转到相应的位置 … 这部分的复杂度是 $O(m^2)$，因此整体的复杂度是 $O(n \times m^2)$，而我们的朴素解法是 $O(m \times n)$。
+
+    说明还有一些性质我们没有利用到。
+
+    显然，扫描完整原串操作这一操作是不可避免的，我们可以优化的只能是「检查已匹配部分的相同前缀和后缀」这一过程。
+
+3. Solution：预处理出`next`数组，数组中每个位置的值就是该下标应该跳转的目标位置（ next 点）
+    以下是整个`next`数据的组建过程，时空复杂度均为 O(m)，因此整个 KMP 匹配过程复杂度是`O(m+n)`的
+   <!-- 第一行：两张图片各占50% -->
+    <div style="display: flex; width: 100%; gap: 10px; margin-bottom: 10px;">
+      <div style="flex: 1; text-align: center;">
+        <img src="img_20.png" alt="示意图1" style="width: 100%; max-width: 100%;">
+      </div>
+      <div style="flex: 1; text-align: center;">
+        <img src="img_21.png" alt="示意图2" style="width: 100%; max-width: 100%;">
+      </div>
+    </div>
+    
+    <!-- 第二行：两张图片各占50% -->
+    <div style="display: flex; width: 100%; gap: 10px;">
+      <div style="flex: 1; text-align: center;">
+        <img src="img_22.png" alt="示意图3" style="width: 100%; max-width: 100%;">
+      </div>
+      <div style="flex: 1; text-align: center;">
+        <img src="img_23.png" alt="示意图4" style="width: 100%; max-width: 100%;">
+      </div>
+    </div>
+4. 代码实现：往原串和匹配串头部追加一个`哨兵`
+    ```java
+    class Solution {
+    // KMP 算法
+    // ss: 原串(string)  pp: 匹配串(pattern)
+    public int strStr(String ss, String pp) {
+        if (pp.isEmpty()) return 0;
+    
+            // 分别读取原串和匹配串的长度
+            int n = ss.length(), m = pp.length();
+            // 原串和匹配串前面都加空格，使其下标从 1 开始
+            ss = " " + ss;
+            pp = " " + pp;
+    
+            char[] s = ss.toCharArray();
+            char[] p = pp.toCharArray();
+    
+            // 构建 next 数组，数组长度为匹配串的长度（next 数组是和匹配串相关的）
+            int[] next = new int[m + 1];
+            // 构造过程 i = 2，j = 0 开始，i 小于等于匹配串长度 【构造 i 从 2 开始】
+            for (int i = 2, j = 0; i <= m; i++) {
+                // 匹配不成功的话，j = next(j)
+                while (j > 0 && p[i] != p[j + 1]) j = next[j];
+                // 匹配成功的话，先让 j++
+                if (p[i] == p[j + 1]) j++;
+                // 更新 next[i]，结束本次循环，i++
+                next[i] = j;
+            }
+    
+            // 匹配过程，i = 1，j = 0 开始，i 小于等于原串长度 【匹配 i 从 1 开始】
+            for (int i = 1, j = 0; i <= n; i++) {
+                // 匹配不成功 j = next(j)
+                while (j > 0 && s[i] != p[j + 1]) j = next[j];
+                // 匹配成功的话，先让 j++，结束本次循环后 i++
+                if (s[i] == p[j + 1]) j++;
+                // 整一段匹配成功，直接返回下标
+                if (j == m) return i - m;
+            }
+    
+            return -1;
+        }
+    }
+    ```
 
 ---
-### 二叉树
+## 二叉树
 <span id="二叉树"></span>
 - [x] [1022. 从根到叶的二进制数之和](https://leetcode.cn/problems/sum-of-root-to-leaf-binary-numbers/description/?envType=daily-question&envId=2026-02-24)
     <br>dfs + 递归
