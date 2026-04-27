@@ -1,7 +1,7 @@
 ---
 title: 动作分类项目
 published: 2026-03-01
-description: "忙里偷闲，一些记录…"
+description: "好的。"
 image: ''
 tags: [Coding]
 category: 'note'
@@ -17,4 +17,8 @@ draft: false
     pip install numpy pandas matplotlib scikit-learn torch tqdm jupyter
    ```
    验收：在VS Code左下角看到Python 3.9.x ('fitness')字样。
-3. 
+3. 学习python基础
+   
+4. SCV文件操作
+5. 数据预处理
+6. 模型初步搭建
