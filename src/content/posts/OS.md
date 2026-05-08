@@ -1,6 +1,6 @@
 ---
 title: 操作系统 OS
-published: 2026-03-05
+published: 2026-03-02
 description: "课上笔记在其他软件。王道操作系统笔记，持续更新ing…"
 image: ''
 tags: [ Learn ]
