@@ -25,7 +25,9 @@ draft: true
     - [2. 包设计原则 (包级 SOLID)](#2-包设计原则-包级-solid)
     - [3. 多视角建模：Kruchten 4+1 视图](#3-多视角建模kruchten-41-视图)
     - [4. 接口设计与依赖倒置](#4-接口设计与依赖倒置)
-    - [5. 集成与验证](#5-集成与验证)
+    - [5. 体系结构构建](#5-体系结构构建)
+    - [6. 集成策略与验证](#6-集成策略与验证)
+  - [](#)
   - [第四部分：AI 增强架构 (AI for SE)](#第四部分ai-增强架构-ai-for-se)
 
 
@@ -243,7 +245,11 @@ draft: true
 3. 逻辑设计 — 需求到模块的映射
     <br>核⼼任务：将功能需求分配到各⼦系统和模块中。
     <br>识别功能域，为每个功能域创建三层模块(UI、BL、Data)
-    ![alt text](image-59.png)
+    <div style="display: flex; width: 100%; margin-left: 0;">
+    <div style="flex: 1; text-align: center;">
+    <img src="/images/reflect.png" alt="映射" style="width: 60%; max-width: 800px; height: auto;">
+    </div>
+    </div>
 ---
 
 ## 第三部分：体系结构设计实践与验证 (PPT 03-03)
@@ -287,16 +293,35 @@ draft: true
 - 例：在线书店
 
 ### 4. 接口设计与依赖倒置
-* **DIP (依赖倒置原则)**：高层模块和低层模块都应依赖于抽象（接口）。 [cite: 1459, 1460]
+* **DIP (依赖倒置原则)**：要想设计一个灵活的系统，在源代码层次的依赖关系中就应该多引用**抽象类型**，而非具体实现。
+  <br>传统依赖：高层Service → 低层Dao；依赖倒置后：高层 → **抽象接口** ← 低层模块
 * **对象区分**：
-    * **PO (Persistent Object)**：持久化对象，与数据库表一一对应。 [cite: 1443, 1445]
-    * **VO (Value Object)**：视图对象，面向前端数据传输，隔离数据库细节。 [cite: 1443, 1446, 1447]
-* **无状态设计**：Service 不持有请求状态，确保单例模式下的线程安全。 [cite: 1539, 1542]
+    * **PO (Persistent Object)**：持久化对象，每个字段都和数据库中表的列一一对应（entity/dao）。 
+    * **VO (Value Object)**：视图对象，面向前端数据传输，隔离数据库细节（controller/service）。
+* **无状态设计**：Service 不持有请求状态，确保单例模式下的线程安全。
+  ![alt text](image-59.png)
+* 例
+    <div style="display: flex; width: 100%; margin-left: 0;">
+    <div style="flex: 6.5; text-align: center;">
+    <img src="/images/PO.png" alt="PO接口" style="width: 100%; max-width: 800px; height: auto;">
+    </div>
+    <div style="flex: 3.5; text-align: center;">
+    <img src="/images/VO.png" alt="VO接口" style="width: 100%; max-width: 800px; height: auto;">
+    </div>
+    <div style="flex: 6.5; text-align: center;">
+    <img src="/images/POtoVO.png" alt="类实现PO转VO" style="width: 100%; max-width: 800px; height: auto;">
+    </div>
+    </div>
 
-### 5. 集成与验证
-* **集成策略**：自顶向下（需 Stub/桩）、自底向上（需 Driver/驱动）、持续集成 (CI)。 [cite: 1604, 1607, 1616]
-* **评审方法**：ATAM (架构权衡分析)、SAAM (基于场景的分析)。 [cite: 1649, 1655]
+### 5. 体系结构构建
+![alt text](image-63.png)
 
+### 6. 集成策略与验证
+* **集成策略**：大爆炸（所有模块一次集成）、自顶向下（需大量 Stub）、自底向上（需大量 Driver）、三明治（顶层+底层同时，中间最后）、持续集成 。 
+- **Stub桩** 和 **Driver驱动**
+  <br>Stub桩：实现了 BookDao 接口的假实现类，和真实的 BookDaoImpl 接口签名完全一致，但不做任何实际的数据库操作，只是直接返回固定的假数据
+  <br>Driver驱动：动发起调用的 “假上层模块”，用来替代还没开发好的上层代码（如 Service/Controller）
+  ![alt text](image-64.png)
 ---
 
 ## 第四部分：AI 增强架构 (AI for SE)
