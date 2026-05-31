@@ -29,6 +29,15 @@ draft: true
     - [6. 集成策略与验证](#6-集成策略与验证)
   - [](#)
   - [第四部分：AI 增强架构 (AI for SE)](#第四部分ai-增强架构-ai-for-se)
+  - [第四部分：人机交互设计](#第四部分人机交互设计)
+- [设计模式](#设计模式)
+  - [1. 可修改性](#1-可修改性)
+  - [2. 设计模式](#2-设计模式)
+    - [2.1 策略模式](#21-策略模式)
+    - [2.2 抽象工厂模式](#22-抽象工厂模式)
+    - [2.3 单键模式](#23-单键模式)
+    - [2.4 迭代器模式](#24-迭代器模式)
+- [](#-1)
 
 
 需求分析、设计、编程的关系
@@ -37,6 +46,7 @@ draft: true
 1. 软件工程的定义
     <br>软件⼯程是将系统化的、规范化的、可量化的⽅法应⽤于软件的开发、运⾏和维护的过程;
     <br>即将⼯程化的⽅法应⽤于软件。
+2. 策略模式的UML类图
 
 
 # U3 软件架构设计
@@ -317,7 +327,7 @@ draft: true
 ![alt text](image-63.png)
 
 ### 6. 集成策略与验证
-* **集成策略**：大爆炸（所有模块一次集成）、自顶向下（需大量 Stub）、自底向上（需大量 Driver）、三明治（顶层+底层同时，中间最后）、持续集成 。 
+- **集成策略**：大爆炸（所有模块一次集成）、自顶向下（需大量 Stub）、自底向上（需大量 Driver）、三明治（顶层+底层同时，中间最后）、持续集成 。 
 - **Stub桩** 和 **Driver驱动**
   <br>Stub桩：实现了 BookDao 接口的假实现类，和真实的 BookDaoImpl 接口签名完全一致，但不做任何实际的数据库操作，只是直接返回固定的假数据
   <br>Driver驱动：动发起调用的 “假上层模块”，用来替代还没开发好的上层代码（如 Service/Controller）
@@ -331,3 +341,126 @@ draft: true
     * **气味识别**：利用 AI 自动检测包结构中的循环依赖或层违规调用。 [cite: 302]
     * **ADR 辅助**：利用 LLM 快速生成决策记录初稿，人工进行权衡审查。 [cite: 279, 291]
     * **结构生成**：通过 Prompt 快速搭建符合分层规范的项目骨架。 [cite: 1735, 1743]
+
+## 第四部分：人机交互设计
+- exam：给一个例子，说明符合/不符合什么原则
+可⽤性（P9）
+⼈的特点（P17）
+精神模型（P18）
+⼈因研究（P25–P26）
+可视化设计（P33–P36）
+交互的概念（P39–P40）
+交互的⽅法（P50）
+导航（P53–P54）
+反馈（P57）
+协作式设计（P58–P62）
+⼈机交互设计的过程（P65）
+⻩⾦原则（P70–P72）
+可⽤性评估⽅法
+可访问性设计（A11y）
+AI/LLM ⼈机交互新范式
+
+# 设计模式
+## 1. 可修改性
+1. 是什么 What？
+    |维度	|含义	|举例|
+    |-----|-----|-----|
+    |M| 可修改性	|对已有实现进行修改	|修改现有商品促销策略|
+    |E |可扩展性	|新增全新实现	|增加一条新的促销策略|
+    |C |灵活性	|运行时动态配置实现|	动态更改商品对应的促销策略|
+    
+2. 怎么实现 How？
+   - **接口**与**实现**的分离
+   <div style="display: flex; width: 100%; margin-left: 0;">
+    <div style="flex: 1; text-align: center;">
+    <img src="/images/designmodel1.png" alt="计算机网络基本概念总结" style="width: 100%; max-width: 600px; height: auto;">
+    </div>
+    <div style="flex: 1; text-align: center;">
+    <img src="/images/designmodel2.png" alt="计算机网络基本概念总结" style="width: 100%; max-width: 600px; height: auto;">
+    </div>
+    <div style="flex: 1; text-align: center;">
+    <img src="/images/designmodel3.png" alt="计算机网络基本概念总结" style="width: 100%; max-width: 600px; height: auto;">
+    </div>
+    </div>
+
+## 2. 设计模式
+1. 什么是 What？
+   对“重复出现问题”的经典解决方案——前人的经验总结
+2. 怎么实现 How？
+   <br>典型问题、设计分析、解决方案（那些类、每个类的作用、类之间的协作）、案例（真正代码）
+
+### 2.1 策略模式
+1. 定义：定义一系列算法，将每个算法封装起来，使它们可互换。算法变化独立于使用算法的客户端。
+2. 三个角色
+    |角色	|职责|
+    |----|----|
+    |Client	|选择策略|
+    |Context	|使用策略|
+    |Strategy|	实现算法|    
+    - 策略模式类图（Client选择具体Context）
+        ![alt text](image-77.png)
+3. 什么场景使用？
+   - 流程差不多，只是具体实现不同
+   - 结果差不多，但有多种实现
+   - 大量 switch-case
+4. 优点 & 缺点
+    <br>✅ 动态切换策略（动态调用策略context.setStrategy(new Alipay());）
+    <br>✅ 消除 switch-case
+    <br>✅ 代码职责清晰
+    <br>❌ 类会变多（一个策略产生一个类 WechatPay、AliPay…）
+    <br>❌ Client 需要了解所有策略
+    
+5. 例：支付策略
+    ```java
+    // CLient 用户：选择策略
+    // 创建具体策略（微信支付），把策略交给Context（订单系统）
+    PaymentStrategy s = new WechatPay();
+    OrderContext context = new OrderContext(s);
+    // Context 上下文：使用策略
+    // 不实现“微信支付” 只调用，把任务交给Strategy
+    class OrderContext {
+        PaymentStrategy strategy;
+
+        public OrderContext(PaymentStrategy s){
+            strategy = s;
+        }
+
+        public void pay(){
+            strategy.pay();
+        }
+    }
+    // Strategy 策略：具体实现算法
+    class WechatPay implements PaymentStrategy{
+        public void pay(){
+            System.out.println("微信支付");
+        }
+    }
+    ```
+6. 考题：
+    支付策略：![alt text](image-78.png)![alt text](image-79.png)![alt text](image-80.png)![alt text](image-81.png)![alt text](image-82.png)
+    Traffic：![alt text](image-83.png)
+
+### 2.2 抽象工厂模式
+1. **目的**：对象创建复杂或多变，通过工厂封装创建逻辑，降低客户端耦合
+   <br>把创建逻辑交给Factory；CLient只找工厂要的对象
+   ![alt text](image-84.png)
+2. 实现：抽象工厂模式：定义了一个创建对象的**接口**，由**子类**决定要使实例化哪一个类。工厂方法让类的实例化延迟到子类。
+    - 类图
+        ![alt text](image-85.png)
+3. 例子：不同公司键盘鼠标
+   ![alt text](image-86.png)
+   ```java
+    PcFactory factory = new DellPcFactory();
+
+    Mouse mouse = factory.produceMouse();
+    Keyboard keyboard = factory.produceKeyboard();
+    // 换成 HP
+    PcFactory factory = new HpPcFactory();
+    ```
+### 2.3 单键模式
+
+
+### 2.4 迭代器模式
+
+
+# 
